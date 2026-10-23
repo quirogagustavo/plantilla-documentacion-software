@@ -31,3 +31,13 @@ Genera la salida en formato Markdown con las siguientes secciones:
 3\. **Requerimientos No Funcionales (RNF-XXX)** (Con sus métricas/umbrales de calidad explícitos).
 
 4\. **Requerimientos de Interfaz/Usuario (RU-XXX)**.
+
+## Modelos de datos ERD/MER
+
+- Para diseñar o documentar persistencia, aplica `.github/prompts/generar-erd-mer.prompt.md`.
+- Sigue el flujo Narrativa → SRS → USM → Contratos API → Modelo de datos.
+- Contrasta esquemas y migraciones existentes antes de proponer tablas.
+- Conserva las rutas e identificadores del proyecto; en esta plantilla, guarda
+  los modelos nuevos en `modeloDatos/`.
+- No impongas un dominio ni motor: usa PostgreSQL/PostGIS solo cuando corresponda.
+- Distingue hechos documentados, propuestas y pendientes; no inventes restricciones.

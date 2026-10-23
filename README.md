@@ -1,115 +1,137 @@
-\# Guía de Documentación y Skills de IA para el Proyecto
+# Guía de documentación y prompts de IA
 
-Este repositorio utiliza una metodología estandarizada de ingeniería de requerimientos e integración impulsada por **GitHub Copilot en VS Code**. Su objetivo es transformar visiones de producto en requerimientos formales, mapas de historias, contratos de API desacoplados y tareas listas para importar en Redmine.
+Esta plantilla utiliza **GitHub Copilot en VS Code** para transformar narrativas
+en requerimientos formales, mapas de historias, contratos API, modelos de datos y
+tareas para Redmine.
 
-\---
+## Requisitos previos
 
-\## 🛠️ Requisitos Previos
+1. Visual Studio Code con GitHub Copilot y su chat habilitados.
+2. Una copia local del repositorio.
+3. Documentos de negocio y contexto del proyecto que se desea documentar.
 
-1\. Utilizar **Visual Studio Code**.
+## Flujo de trabajo
 
-2\. Tener instalada y activa la extensión **GitHub Copilot** y **GitHub Copilot Chat**.
+El recorrido de diseño es **Narrativa → SRS → USM → Contratos API → ERD/MER**.
+El CSV de Redmine es una salida de planificación a partir del USM y los contratos.
 
-3\. Tener clonado este repositorio localmente en tu equipo.
-
-\---
-
-\## 🔄 Flujo de Trabajo Completo (End-to-End Workflow)
-
-El proceso de documentación sigue un pipeline secuencial y trazable donde cada etapa sirve como insumo de entrada para la siguiente:
-
-\`\`\`mermaid
-
+```mermaid
 graph TD
+    A["1. Épica / Narrativa"] --> B["2. SRS - ISO 29148"]
+    B --> C["3. User Story Map - USM"]
+    C --> D["4. Contratos de API REST"]
+    D --> E["5. Modelo de datos - ERD/MER"]
+    C --> R["CSV de tareas Redmine"]
+    D --> R
+    D --> F["Equipo Frontend"]
+    D --> G["Equipo Backend"]
+    E --> G
+    R --> H["Gestión de tareas en Redmine"]
+```
 
-    A\[1. Épica / Narrativa\] --&gt;|[01-generar-srs-iso29148.prompt.md](http://01-generar-srs-iso29148.prompt.md)| B\[2. SRS - ISO 29148\]
+## Estructura
 
-    B --&gt;|[02-generar-usm.prompt.md](http://02-generar-usm.prompt.md)| C\[3. User Story Map - USM\]
+```text
+.github/
+├── copilot-instructions.md
+└── prompts/
+    ├── generar-srs-iso29148.prompt.md
+    ├── generar-usm.prompt.md
+    ├── generar-contrato-api.prompt.md
+    ├── generar-erd-mer.prompt.md
+    └── 04-generar-csv-redmine.prompt.md
+```
 
-    C --&gt;|[03-generar-contrato-api.prompt.md](http://03-generar-contrato-api.prompt.md)| D\[4. Contratos de API REST\]
+Las carpetas de salida se crean al generar los documentos:
 
-    C --&gt;|[04-generar-csv-redmine.prompt.md](http://04-generar-csv-redmine.prompt.md)| E\[5. Archivo CSV Tareas Redmine\]
+| Carpeta | Contenido |
+| --- | --- |
+| `narrativa/` | Visión de negocio y épicas |
+| `SRS/` | Especificaciones de requerimientos |
+| `USM/` | Mapas de historias de usuario |
+| `historias/` | Historias de usuario |
+| `contrato_api/` | Contratos de API REST |
+| `modeloDatos/` | Modelos ERD/MER, diccionarios y esquemas |
+| `redmine/` | CSV para importación de tareas |
 
-    D --&gt;|Desarrollo Paralelo| F\[Equipo Frontend\]
+En proyectos existentes se conservan sus rutas e identificadores; por ejemplo,
+`docs/erd/` en lugar de `modeloDatos/`. No se deben crear documentos duplicados.
 
-    D --&gt;|Desarrollo Paralelo| G\[Equipo Backend\]
+## Ejecución en Copilot Chat
 
-    E --&gt;|Importación Masiva| H\[Gestión de Tareas en Redmine\]
+Los archivos de `.github/prompts/` son **prompts reutilizables** (llamados
+informalmente skills en esta guía), no Agent Skills con estructura `SKILL.md`.
+Puedes seleccionarlos desde el menú `/` de Copilot Chat o pedir explícitamente
+que se aplique el archivo indicado.
 
-📂 Estructura del Repositorio
+### 1. Generar SRS (ISO 29148)
 
-├── .github/
+Aplica [generar-srs-iso29148.prompt.md](.github/prompts/generar-srs-iso29148.prompt.md)
+a la narrativa para obtener requisitos atómicos y verificables.
 
-│   ├── [copilot-instructions.md](http://copilot-instructions.md)          # Reglas globales de IA (Norma ISO 29148)
+```text
+Aplica .github/prompts/generar-srs-iso29148.prompt.md a narrativa/mi_modulo.md
+y guarda la especificación en SRS/SRS_mi_modulo.md.
+```
 
-│   └── prompts/                         # Skills y Prompts ejecutables de Copilot
+### 2. Generar el User Story Map
 
-│       ├── [01-generar-srs-iso29148.prompt.md](http://01-generar-srs-iso29148.prompt.md)
+Aplica [generar-usm.prompt.md](.github/prompts/generar-usm.prompt.md)
+para organizar historias, releases y el recorrido MVP.
 
-│       ├── [02-generar-usm.prompt.md](http://02-generar-usm.prompt.md)
+```text
+Aplica .github/prompts/generar-usm.prompt.md a SRS/SRS_mi_modulo.md
+y guarda el mapa en USM/USM_mi_modulo.md.
+```
 
-│       ├── [03-generar-contrato-api.prompt.md](http://03-generar-contrato-api.prompt.md)
+### 3. Generar contratos API
 
-│       └── [04-generar-csv-redmine.prompt.md](http://04-generar-csv-redmine.prompt.md)
+Aplica [generar-contrato-api.prompt.md](.github/prompts/generar-contrato-api.prompt.md)
+a partir del USM y la SRS.
 
-├── narrativa/                            # Visión de negocio y épicas
+```text
+Aplica .github/prompts/generar-contrato-api.prompt.md a USM/USM_mi_modulo.md
+y SRS/SRS_mi_modulo.md. Guarda el contrato en contrato_api/API_mi_modulo.md.
+```
 
-├── historias/                            # User Story Map (USM) e Historias de Usuario
+### 4. Generar el modelo ERD/MER
 
-├── contrato_api/                         # Contratos de API REST (Frontend y Backend)
+Aplica [generar-erd-mer.prompt.md](.github/prompts/generar-erd-mer.prompt.md)
+después de los contratos API. El resultado incluye un diagrama Mermaid
+`erDiagram`, diccionario de datos, relaciones, restricciones y trazabilidad.
 
-├── modeloDatos/                          # Diseños de base de datos y esquemas
+```text
+Aplica .github/prompts/generar-erd-mer.prompt.md a narrativa/mi_modulo.md,
+SRS/SRS_mi_modulo.md, USM/USM_mi_modulo.md y contrato_api/API_mi_modulo.md.
+Contrasta los esquemas y migraciones existentes y guarda el resultado en
+modeloDatos/ERD_mi_modulo.md. Separa hechos, propuestas y pendientes.
+```
 
-├── redmine/                              # Archivos CSV para importación masiva en Redmine
+El prompt es independiente del dominio y del motor. Si el motor no está
+confirmado, genera el modelo lógico y deja el físico pendiente.
+PostgreSQL/PostGIS se utiliza solo cuando el proyecto lo requiera; las versiones,
+SRID y reglas espaciales no se asumen.
 
-├── SRS/                                  # Especificaciones de requerimientos
+### Planificación: generar CSV para Redmine
 
-├── USM/                                  # Mapas de historias de usuario
+Aplica [04-generar-csv-redmine.prompt.md](.github/prompts/04-generar-csv-redmine.prompt.md)
+al USM y los contratos. Esta salida no es un prerrequisito para el ERD/MER.
 
-└── [README.md](http://README.md)
+```text
+Aplica .github/prompts/04-generar-csv-redmine.prompt.md a USM/USM_mi_modulo.md
+y contrato_api/API_mi_modulo.md. Guarda el resultado en
+redmine/tareas_redmine_mi_modulo.csv.
+```
 
-## 🚀 Guía Paso a Paso para la Ejecución de Skills
+## Reglas de calidad y colaboración
 
-Para ejecutar cada etapa con **GitHub Copilot Chat** (`Ctrl + Alt + I` / `Cmd + Alt + I`), utiliza los siguientes comandos:
-
-### Paso 1: Generar los Requerimientos SRS (ISO 29148)
-
-A partir del documento de épica en `narrativa/`, genera los Requerimientos Funcionales (`RF-XXX`) y No Funcionales (`RNF-XXX`).
-
-- **Comando en Copilot Chat:**
-
-  @workspace Genera la especificación SRS aplicando el prompt .github/prompts/[01-generar-srs-iso29148.prompt.md](http://01-generar-srs-iso29148.prompt.md) basándote en el archivo narrativa/tu\_[archivo.md](http://archivo.md)
-
-### Paso 2: Generar el User Story Map (USM)
-
-A partir de la SRS generada en el paso anterior, organiza las historias de usuario y define la línea de corte del MVP.
-
-- **Comando en Copilot Chat:**
-
-  @workspace Genera el User Story Map utilizando el prompt .github/prompts/[02-generar-usm.prompt.md](http://02-generar-usm.prompt.md) a partir de los requerimientos de SRS/tu_archivo\_[srs.md](http://srs.md)
-
-### Paso 3: Generar los Contratos de API (Frontend / Backend)
-
-A partir de la definición del USM, genera las especificaciones de la API RESTful para desacoplar el desarrollo de Front y Back.
-
-- **Comando en Copilot Chat:**
-
-  @workspace Diseña el contrato de API ejecutando el prompt .github/prompts/[03-generar-contrato-api.prompt.md](http://03-generar-contrato-api.prompt.md) tomando como entrada historias/tu\_[USM.md](http://USM.md)
-
-### Paso 4: Generar el CSV de Tareas para Redmine
-
-A partir del User Story Map y los Contratos de API, desglosa las historias en tareas para importar de forma masiva a Redmine.
-
-- **Comando en Copilot Chat:**
-
-  @workspace Genera el archivo CSV para Redmine ejecutando el prompt .github/prompts/[04-generar-csv-redmine.prompt.md](http://04-generar-csv-redmine.prompt.md) tomando como entrada historias/tu\_[USM.md](http://USM.md) y guarda el resultado en redmine/tareas_redmine_tu_modulo.csv
-
-## 📌 Reglas de Calidad y Colaboración
-
-- **Formato ISO 29148 Obligatorio:** Todos los requerimientos del sistema deben mantener de forma estricta la sintaxis `[Sujeto] + deberá + [Acción/Condición] + [Resultado]`.
-
-- **Desacoplamiento de Desarrollo:**
-
-  - **Frontend:** Puede utilizar las estructuras JSON definidas en `contrato_api/` para maquetar e implementar datos simulados (*mock data*) sin depender del avance del servidor.
-
-  - **Backend:** Debe implementar la lógica de negocio, validaciones (DTOs) y controladores siguiendo exactamente los esquemas y códigos de respuesta del contrato.
+- **ISO 29148:** cada requisito debe seguir la estructura
+  `[Sujeto] + deberá/deberán + [Acción/Condición] + [Resultado] + [Restricción]`.
+- **Trazabilidad:** conserva los IDs entre narrativa, SRS, USM, API y modelo de datos.
+- **Fuentes:** distingue hechos documentados, propuestas y datos pendientes.
+  No inventes reglas, prioridades, métricas ni restricciones ausentes.
+- **Frontend:** utiliza los contratos para implementar clientes y datos simulados
+  sin depender del servidor.
+- **Backend:** implementa los contratos y las reglas de negocio. Los DTOs no
+  equivalen automáticamente a tablas; el modelo de persistencia debe justificar
+  sus entidades, relaciones y cambios frente al esquema existente.
