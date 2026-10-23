@@ -20,9 +20,22 @@ Cada vez que el usuario solicite extraer o redactar requerimientos desde un arch
 
   - `RU-XXX` para Requerimientos de Usuario e Interfaz.
 
-\## Estructura de Salida Esperada
+## Narrativas de negocio
 
-Genera la salida en formato Markdown con las siguientes secciones:
+- Para describir un proceso desde formularios, reuniones o documentos, aplica
+  `.github/prompts/generar-narrativa-requisitos.prompt.md`.
+- Pese a su nombre, ese prompt genera únicamente narrativa descriptiva, no requisitos.
+- La sintaxis ISO 29148 y la estructura SRS de la sección siguiente se aplican
+  cuando se soliciten requisitos o una SRS, no al generar narrativas.
+- No incluyas catálogos RF/RNF ni frases como «El sistema deberá» en la narrativa.
+- Describe actores y reglas respaldados por fuentes; separa hechos, propuestas
+  y pendientes sin asumir un dominio concreto.
+- El modelo conceptual de la narrativa no sustituye al modelo lógico/físico
+  ERD/MER posterior a los contratos API.
+
+## Estructura de salida esperada para requisitos / SRS
+
+Solo al generar requisitos o una SRS, utiliza Markdown con las siguientes secciones:
 
 1\. **Introducción y Alcance del Documento SRS**
 

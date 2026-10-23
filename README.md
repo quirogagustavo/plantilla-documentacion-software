@@ -1,8 +1,8 @@
 # Guía de documentación y prompts de IA
 
-Esta plantilla utiliza **GitHub Copilot en VS Code** para transformar narrativas
-en requerimientos formales, mapas de historias, contratos API, modelos de datos y
-tareas para Redmine.
+Esta plantilla utiliza **GitHub Copilot en VS Code** para transformar fuentes de
+negocio en narrativas, requerimientos formales, mapas de historias, contratos API,
+modelos de datos y tareas para Redmine.
 
 ## Requisitos previos
 
@@ -17,6 +17,7 @@ El CSV de Redmine es una salida de planificación a partir del USM y los contrat
 
 ```mermaid
 graph TD
+    O["Fuentes de negocio"] --> A
     A["1. Épica / Narrativa"] --> B["2. SRS - ISO 29148"]
     B --> C["3. User Story Map - USM"]
     C --> D["4. Contratos de API REST"]
@@ -35,6 +36,7 @@ graph TD
 .github/
 ├── copilot-instructions.md
 └── prompts/
+    ├── generar-narrativa-requisitos.prompt.md
     ├── generar-srs-iso29148.prompt.md
     ├── generar-usm.prompt.md
     ├── generar-contrato-api.prompt.md
@@ -64,7 +66,23 @@ informalmente skills en esta guía), no Agent Skills con estructura `SKILL.md`.
 Puedes seleccionarlos desde el menú `/` de Copilot Chat o pedir explícitamente
 que se aplique el archivo indicado.
 
-### 1. Generar SRS (ISO 29148)
+### 1. Generar la narrativa de negocio
+
+Aplica [generar-narrativa-requisitos.prompt.md](.github/prompts/generar-narrativa-requisitos.prompt.md)
+a formularios, notas de reuniones o documentos de trabajo.
+
+```text
+Aplica .github/prompts/generar-narrativa-requisitos.prompt.md a las fuentes de
+negocio de mi módulo y al contexto del proyecto. Guarda la narrativa en
+narrativa/mi_modulo.md, distinguiendo hechos, propuestas y asuntos pendientes.
+```
+
+El nombre se conserva por compatibilidad, pero el resultado es **solo narrativa**:
+no contiene requisitos RF/RNF ni frases como «El sistema deberá».
+Incluye el recorrido y un flujo visual; el modelo conceptual describe el dominio
+sin definir tablas físicas. El modelo lógico/físico se genera en el paso ERD/MER.
+
+### 2. Generar SRS (ISO 29148)
 
 Aplica [generar-srs-iso29148.prompt.md](.github/prompts/generar-srs-iso29148.prompt.md)
 a la narrativa para obtener requisitos atómicos y verificables.
@@ -74,7 +92,7 @@ Aplica .github/prompts/generar-srs-iso29148.prompt.md a narrativa/mi_modulo.md
 y guarda la especificación en SRS/SRS_mi_modulo.md.
 ```
 
-### 2. Generar el User Story Map
+### 3. Generar el User Story Map
 
 Aplica [generar-usm.prompt.md](.github/prompts/generar-usm.prompt.md)
 para organizar historias, releases y el recorrido MVP.
@@ -84,7 +102,7 @@ Aplica .github/prompts/generar-usm.prompt.md a SRS/SRS_mi_modulo.md
 y guarda el mapa en USM/USM_mi_modulo.md.
 ```
 
-### 3. Generar contratos API
+### 4. Generar contratos API
 
 Aplica [generar-contrato-api.prompt.md](.github/prompts/generar-contrato-api.prompt.md)
 a partir del USM y la SRS.
@@ -94,7 +112,7 @@ Aplica .github/prompts/generar-contrato-api.prompt.md a USM/USM_mi_modulo.md
 y SRS/SRS_mi_modulo.md. Guarda el contrato en contrato_api/API_mi_modulo.md.
 ```
 
-### 4. Generar el modelo ERD/MER
+### 5. Generar el modelo ERD/MER
 
 Aplica [generar-erd-mer.prompt.md](.github/prompts/generar-erd-mer.prompt.md)
 después de los contratos API. El resultado incluye un diagrama Mermaid
@@ -127,6 +145,7 @@ redmine/tareas_redmine_mi_modulo.csv.
 
 - **ISO 29148:** cada requisito debe seguir la estructura
   `[Sujeto] + deberá/deberán + [Acción/Condición] + [Resultado] + [Restricción]`.
+  Esta regla corresponde a la etapa SRS, no a la narrativa descriptiva.
 - **Trazabilidad:** conserva los IDs entre narrativa, SRS, USM, API y modelo de datos.
 - **Fuentes:** distingue hechos documentados, propuestas y datos pendientes.
   No inventes reglas, prioridades, métricas ni restricciones ausentes.
